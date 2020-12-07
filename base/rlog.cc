@@ -1,6 +1,4 @@
 #include "rlog.h"
-#include "timestamp.h"
-#include "buffer.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -52,7 +50,7 @@ rlog::~rlog(){
         tid.join();
         if(!prst_buf->empty()){
             int year=tm_.year,mon=tm_.mon,day=tm_.day;
-            year_=year;mon=mon_;day_=day;
+            year_=year;mon_=mon;day_=day;
             char log_path[1024];
             sprintf(log_path,"%s/%s.%d%02d%02d.%u.log",log_dir,basename,year_,mon_,day_,pid_);
             fp_.open(log_path,std::ios::app);

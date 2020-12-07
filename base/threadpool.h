@@ -5,7 +5,7 @@
 #include <condition_variable>
 #include <atomic>
 #include <thread>
-#include <functional>|
+#include <functional>
 #include <future>
 
 class threadPool{

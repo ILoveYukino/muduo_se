@@ -3,7 +3,7 @@
 class timestamp{
     public:
         timestamp();
-        uint64_t get_now_time(int* p_msec=nullptr);
+        uint64_t get_now_time(int* p_msec);
 
     public:
         int year,mon,day,hour,min,sec;

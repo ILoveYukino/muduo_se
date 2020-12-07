@@ -4,6 +4,8 @@
 #include <condition_variable>
 #include <atomic>
 #include <fstream>
+#include "timestamp.h"
+#include "buffer.h"
 
 enum LOG_LEVEL{
     FATAL=1,
