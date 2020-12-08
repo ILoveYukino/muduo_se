@@ -1,4 +1,8 @@
-#include <iostream>
+#ifndef _BUFFER_H_
+#define _BUFFER_H_
+
+#include <stdint.h>
+#include <fstream>
 
 class cell_buffer{
     public:
@@ -31,3 +35,5 @@ class cell_buffer{
         uint32_t index_;
         char* data; 
 };
+
+#endif

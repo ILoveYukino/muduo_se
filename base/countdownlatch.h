@@ -1,4 +1,6 @@
-#include <iostream>
+#ifndef _COUNTDOWNLATCH_H_
+#define _COUNTDOWNLATCH_H_
+
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
@@ -15,3 +17,5 @@ class CountDownLatch{
         std::atomic<int> count_;
 
 };
+
+#endif

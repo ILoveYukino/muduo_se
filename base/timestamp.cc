@@ -1,7 +1,7 @@
 #include "timestamp.h"
 #include <chrono>
 #include <sys/time.h>
-
+#include <cstdio>
 
 timestamp::timestamp(){
     auto tt=std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());

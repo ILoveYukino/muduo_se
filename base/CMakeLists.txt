@@ -1,5 +1,4 @@
 set(base_srcs
-    blockqueue.cc
     buffer.cc
     countdownlatch.cc
     rlog.cc

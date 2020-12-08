@@ -253,21 +253,3 @@ void* be_thdo(){
     rlog::instance()->persist();
     return NULL;
 }
-
-#define LOG_INIT(log_dir,basename,level) \
-    do \
-    { \
-        rlog::instance()->init_path(log_dir,basename,level);\
-        rlog::instance()->init();\
-    } while(0);
-
-#define LOG_BASE(level,fmt,args...) \
-    do \
-    { \
-        rlog::instance()->try_append(level,"[%u]%s:%d(%s): " fmt "\n",##args);\
-    } while(0);
-
-#define LOG_INFO(fmt,args...) do{LOG_BASE("[INFO]",fmt,gettid(),__FILE__, __LINE__, __FUNCTION__, ##args)}while(0)
-#define LOG_DEBUG(fmt,args...) do{LOG_BASE("[DEBUG]",fmt,gettid(),__FILE__, __LINE__, __FUNCTION__, ##args)}while(0)
-#define LOG_WARN(fmt,args...) do{LOG_BASE("[WARN]",fmt,gettid(),__FILE__, __LINE__, __FUNCTION__, ##args)}while(0)
-#define LOG_ERROR(fmt,args...) do{LOG_BASE("[ERROR]",fmt,gettid(),__FILE__, __LINE__, __FUNCTION__, ##args)}while(0)

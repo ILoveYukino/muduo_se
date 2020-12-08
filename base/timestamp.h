@@ -1,4 +1,7 @@
-#include <iostream>
+#ifndef _TIMESTAMP_H_
+#define _TIMESTAMP_H_
+
+#include <stdint.h>
 
 class timestamp{
     public:
@@ -15,3 +18,5 @@ class timestamp{
         void reset_fmt();
         void reset_fmt_sec();
 };
+
+#endif

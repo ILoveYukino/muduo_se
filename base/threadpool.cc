@@ -38,7 +38,7 @@ void threadPool::start(){
     }
 }
 
-inline threadPool::~threadPool(){
+threadPool::~threadPool(){
     running.store(false);
     condition_.notify_all();
     for(auto& th:pool_){
@@ -46,3 +46,28 @@ inline threadPool::~threadPool(){
             th->join();
     }
 }
+
+/*template<class F,class... Args>
+auto threadPool::commit(F&& f, Args&&... args) ->std::future<decltype(f(args...))>
+{
+    if(!running.load()){
+        throw std::runtime_error("ThreadPool is stoped");
+    }
+
+    using RetType=decltype(f(args...));
+    auto task = std::make_shared<std::packaged_task<RetType()>>(
+        std::bind(std::forward<F>(f),std::forward<Args>(args)...)
+    );
+    std::future<RetType> future = task->get_future();
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        queue_.emplace(
+            [task](){
+                (*task)();
+            }
+        );
+    }
+    condition_.notify_one();
+
+    return future;
+}*/
