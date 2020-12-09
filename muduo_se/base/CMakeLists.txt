@@ -2,7 +2,6 @@ set(base_srcs
     buffer.cc
     countdownlatch.cc
     rlog.cc
-    singleton.cc
     threadpool.cc
     timestamp.cc
 )
