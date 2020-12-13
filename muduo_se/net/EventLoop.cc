@@ -1,5 +1,7 @@
 #include "EventLoop.h"
 #include "base/rlog.h"
+#include "Channel.h"
+#include "Poller.h"
 #include <thread>
 
 /*线程单例？*/
@@ -43,4 +45,16 @@ bool EventLoop::isInCurrentThread(){
 
 void EventLoop::abortLoopThread(){
     LOG_ERROR("EventLoop %d was created in tid %d , current tid %d",this,tid,gettid());
+}
+
+void EventLoop::upevents(Channel* c){
+    
+    poller_->upChannel(c);
+}
+
+void EventLoop::removeChannel(Channel* c){
+    
+    if(nowChannel_){
+        
+    }
 }
