@@ -15,3 +15,6 @@ target_link_libraries(timestamp_test muduo_se_base)
 
 add_executable(EventLoop_test EventLoop.cc)
 target_link_libraries(EventLoop_test muduo_se_net)
+
+add_executable(PollPoller_test PollPoller.cc)
+target_link_libraries(PollPoller_test muduo_se_net)

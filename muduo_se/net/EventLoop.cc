@@ -2,13 +2,19 @@
 #include "base/rlog.h"
 #include "Channel.h"
 #include "Poller.h"
+#include "PollPoller.h"
 #include <thread>
 
 /*线程单例？*/
 thread_local EventLoop* t_loopthisthread=0;
+const int ktimeoutms=1000;
 
 EventLoop::EventLoop()
 :looping_(false),
+ quit_(false),
+ eventHandle_(false),
+ nowChannel_(nullptr),
+ poller_(new PollPoller(this)),
  tid(gettid()){
      LOG_INIT("rrlog","myname",3);
      LOG_INFO("EventLoop creater %d in thread %d",this,tid);
@@ -27,10 +33,24 @@ EventLoop::~EventLoop(){
 void EventLoop::loop(){
     assertInLoopThread();
     looping_.store(true);
+    quit_.store(false);
     LOG_INFO("EventLoop %d start looping",this);
+
+    while(quit_){
+        activeChannels_.clear();
+        pollReturnTime_=poller_->poll(ktimeoutms,&activeChannels_);
+
+        eventHandle_.store(true);
+        for(auto& channel:activeChannels_){
+            nowChannel_=channel;
+            nowChannel_->handleEvent(pollReturnTime_);
+        }
+        eventHandle_.store(false);
+    }
 
     LOG_INFO("EventLoop %d end looping",this);
     looping_.store(false);
+    nowChannel_=nullptr;
 }
 
 void EventLoop::assertInLoopThread(){
@@ -48,13 +68,20 @@ void EventLoop::abortLoopThread(){
 }
 
 void EventLoop::upevents(Channel* c){
-    
+    assert(c->ownerloop()==this);
+    assertInLoopThread();
     poller_->upChannel(c);
 }
 
 void EventLoop::removeChannel(Channel* c){
-    
-    if(nowChannel_){
-        
+    assert(c->ownerloop()==this);
+    assertInLoopThread();
+    if(eventHandle_){
+        assert(c==nowChannel_ || std::find(activeChannels_.begin(),activeChannels_.end(),c)==activeChannels_.end());
     }
+    poller_->removeChannel(c);
+}
+
+void EventLoop::quit(){
+    quit_.store(true);
 }

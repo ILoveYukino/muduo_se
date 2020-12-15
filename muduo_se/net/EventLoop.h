@@ -2,6 +2,7 @@
 #define _EVENTLOOP_H_
 #include <atomic>
 #include <sys/unistd.h>
+#include <memory>
 #include <vector>
 #include <assert.h>
 #include "base/timestamp.h"

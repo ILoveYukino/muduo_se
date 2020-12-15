@@ -16,10 +16,10 @@ class Channel{
         Channel(EventLoop* loop,int fd_);
         ~Channel();
         /*注册回调函数*/
-        void setReadCallback(ReadEventCallback& func){readcallback_=func;}
-        void setWriteCallback(EventCallback& func){writecallback_=func;}
-        void setCloseCallback(EventCallback& func){closecallback_=func;}
-        void setErrorCallbakc(EventCallback& func){errorcallback_=func;}
+        void setReadCallback(const ReadEventCallback& func){readcallback_=func;}/*加const原因： 临时变量作为引用传递，必须加const*/
+        void setWriteCallback(const EventCallback& func){writecallback_=func;}
+        void setCloseCallback(const EventCallback& func){closecallback_=func;}
+        void setErrorCallbakc(const EventCallback& func){errorcallback_=func;}
         /*设置读写回调*/
         void enread() {events_ |= kreadEvent;upevent();}
         void enwrite() {events_ |+ kwriteEvent;upevent();}
@@ -39,7 +39,7 @@ class Channel{
         int index() {return index_;}
         void setindex(int ind) {index_=ind;} 
 
-        EventLoop* loop() {return loop_;}
+        EventLoop* ownerloop() {return loop_;}
         void remove();
         /*和EventLoop建立联系，在使用是需要用弱指针探查此EventLoop是否存在*/
         void tie(std::shared_ptr<void>&);
