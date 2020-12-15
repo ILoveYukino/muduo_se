@@ -7,7 +7,7 @@
 
 /*线程单例？*/
 thread_local EventLoop* t_loopthisthread=0;
-const int ktimeoutms=1000;
+const int ktimeoutms=1000;//超时时间
 
 EventLoop::EventLoop()
 :looping_(false),
@@ -36,7 +36,7 @@ void EventLoop::loop(){
     quit_.store(false);
     LOG_INFO("EventLoop %d start looping",this);
 
-    while(quit_){
+    while(!quit_){
         activeChannels_.clear();
         pollReturnTime_=poller_->poll(ktimeoutms,&activeChannels_);
 
