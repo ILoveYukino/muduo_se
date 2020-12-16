@@ -3,6 +3,7 @@
 #include "Channel.h"
 #include "Poller.h"
 #include "PollPoller.h"
+#include "EpollPoller.h"
 #include <thread>
 
 /*线程单例？*/
@@ -14,7 +15,7 @@ EventLoop::EventLoop()
  quit_(false),
  eventHandle_(false),
  nowChannel_(nullptr),
- poller_(new PollPoller(this)),
+ poller_(new EpollPoller(this)),
  tid(gettid()){
      LOG_INIT("rrlog","myname",3);
      LOG_INFO("EventLoop creater %d in thread %d",this,tid);
