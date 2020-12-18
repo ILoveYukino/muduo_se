@@ -4,6 +4,7 @@ set(net_srcs
     Poller.cc
     PollPoller.cc
     EpollPoller.cc
+    TimerQueue.cc
 )
 
 add_library(muduo_se_net ${net_srcs})
