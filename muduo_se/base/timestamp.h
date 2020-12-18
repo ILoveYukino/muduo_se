@@ -2,6 +2,9 @@
 #define _TIMESTAMP_H_
 
 #include <stdint.h>
+#include <chrono>
+#include <ctime>
+#include <functional>
 
 class timestamp{
     public:
@@ -18,5 +21,11 @@ class timestamp{
         void reset_fmt();
         void reset_fmt_sec();
 };
+
+using TimerCallBack = std::function<void()>;
+using Clock = std::chrono::high_resolution_clock;
+using MS = std::chrono::microseconds;
+using Se = std::chrono::seconds;
+using timestamp1 = Clock::time_point;
 
 #endif

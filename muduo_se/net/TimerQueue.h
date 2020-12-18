@@ -1,7 +1,5 @@
 #ifndef _TIMERQUEUE_H_
 #define _TIMERQEUEU_H_
-#include <chrono>
-#include <ctime>
 #include <functional>
 #include <atomic>
 
@@ -10,17 +8,17 @@
 #include <mutex>
 #include <sys/timerfd.h>
 #include "Channel.h"
-
+#include "base/timestamp.h"
 /*
     定时器：用于处理定时
     管理方式：小根堆    
 */
 
-using TimerCallBack = std::function<void()>;
+/*using TimerCallBack = std::function<void()>;
 using Clock = std::chrono::high_resolution_clock;
 using MS = std::chrono::microseconds;
 using Se = std::chrono::seconds;
-using timestamp1 = Clock::time_point;
+using timestamp1 = Clock::time_point;*/
 
 /*时间节点：用于管理一个定时事件，类似于events*/
 class timenode{

@@ -87,3 +87,17 @@ void EventLoop::removeChannel(Channel* c){
 void EventLoop::quit(){
     quit_.store(true);
 }
+
+void EventLoop::runat(const timestamp1& t,const TimerCallBack& f){
+    timerqueue_->addTimeNode(f,t,0);
+}
+
+void EventLoop::runafter(int delay,const TimerCallBack& f){
+    Clock::time_point t=Clock::now()+MS(delay);
+    timerqueue_->addTimeNode(f,t,0);
+}
+
+void EventLoop::runevery(int interval,const TimerCallBack& f){
+    Clock::time_point t=Clock::now()+MS(interval);
+    timerqueue_->addTimeNode(f,t,interval);
+}

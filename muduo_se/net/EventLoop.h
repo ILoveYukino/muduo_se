@@ -9,6 +9,7 @@
 
 class Channel;
 class Poller;
+class TimerQueue;
 
 /*事件轮询*/
 class EventLoop{
@@ -21,6 +22,9 @@ class EventLoop{
         bool isInCurrentThread();
         void upevents(Channel* c);
         void removeChannel(Channel* c);
+        void runat(const timestamp1& t,const TimerCallBack& f);
+        void runafter(int delay,const TimerCallBack& f);
+        void runevery(int interval,const TimerCallBack& f);
         static EventLoop* instance();
     private:
         typedef std::vector<Channel*> ChannelList;
@@ -35,6 +39,7 @@ class EventLoop{
         Channel* nowChannel_;
 
         std::unique_ptr<Poller> poller_;
+        std::unique_ptr<TimerQueue> timerqueue_;
 
         timestamp pollReturnTime_;
 };
