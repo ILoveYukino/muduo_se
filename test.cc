@@ -64,8 +64,8 @@ int main(){
     std::vector<Entry> array_;
     //std::vector<INDEX> idlist_;
 
-    //std::unique_ptr<t> s1(new t(10));
-    f(list_,idlist_);
+    auto iter = list_.begin();
+    /*f(list_,idlist_);
 
     for(auto i=list_.begin();i!=list_.end();i++){
         std::cout<<i->second->id<<"  "<<i->second->a<<std::endl;
@@ -76,7 +76,7 @@ int main(){
     Entry t(d.second->a,d.second);
     auto a=list_.find(t);
     t.second.release();
-    std::cout<<a->second->a<<"  "<<a->second->id<<std::endl;
+    std::cout<<a->second->a<<"  "<<a->second->id<<std::endl;*/
 
 
     /*b(list_,idlist_,array_);

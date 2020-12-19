@@ -6,10 +6,11 @@
 #include "EpollPoller.h"
 #include "TimerQueue.h"
 #include <thread>
+#include <assert.h>
 
 /*线程单例？*/
 thread_local EventLoop* t_loopthisthread=0;
-const int ktimeoutms=1000;//超时时间
+const int ktimeoutms=0;//超时时间
 
 EventLoop::EventLoop()
 :looping_(false),
@@ -17,6 +18,7 @@ EventLoop::EventLoop()
  eventHandle_(false),
  nowChannel_(nullptr),
  poller_(new EpollPoller(this)),
+ timerqueue_(new TimerQueue(this)),
  tid(gettid()){
      LOG_INIT("rrlog","myname",3);
      LOG_INFO("EventLoop creater %d in thread %d",this,tid);
@@ -88,16 +90,21 @@ void EventLoop::quit(){
     quit_.store(true);
 }
 
-void EventLoop::runat(const timestamp1& t,const TimerCallBack& f){
-    timerqueue_->addTimeNode(f,t,0);
+timeId EventLoop::runat(const timestamp1& t,const TimerCallBack& f){
+    return timerqueue_->addTimeNode(f,t,0);
 }
 
-void EventLoop::runafter(int delay,const TimerCallBack& f){
+timeId EventLoop::runafter(int delay,const TimerCallBack& f){
     Clock::time_point t=Clock::now()+MS(delay);
-    timerqueue_->addTimeNode(f,t,0);
+    //return timerqueue_->addTimeNode(f,t,0);
+    return runat(t,f);
 }
 
-void EventLoop::runevery(int interval,const TimerCallBack& f){
+timeId EventLoop::runevery(int interval,const TimerCallBack& f){
     Clock::time_point t=Clock::now()+MS(interval);
-    timerqueue_->addTimeNode(f,t,interval);
+    return timerqueue_->addTimeNode(f,t,interval);
+}
+
+void EventLoop::cancel(timeId id){
+    timerqueue_->cancel(id);
 }

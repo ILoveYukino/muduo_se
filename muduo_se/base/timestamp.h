@@ -24,7 +24,7 @@ class timestamp{
 
 using TimerCallBack = std::function<void()>;
 using Clock = std::chrono::high_resolution_clock;
-using MS = std::chrono::microseconds;
+using MS = std::chrono::seconds;
 using Se = std::chrono::seconds;
 using timestamp1 = Clock::time_point;
 

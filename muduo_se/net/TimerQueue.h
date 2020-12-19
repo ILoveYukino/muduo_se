@@ -86,9 +86,10 @@ class timeId{
         timeId(timenode* owner=nullptr,int64_t id=0):own_timenode_(owner),index_(id){}
 
         friend class TimerQueue;
-    private:
+    
         timenode* own_timenode_;
         int64_t index_;
+    private:
 };
 
 #endif

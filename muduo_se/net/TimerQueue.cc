@@ -2,6 +2,7 @@
 #include "base/rlog.h"
 #include "EventLoop.h"
 #include <cstring>
+#include <iostream>
 
 std::atomic_int64_t timenode::size_;
 const int Kmicseconds = 1000000;
@@ -11,7 +12,7 @@ timenode::timenode(TimerCallBack f,timestamp1 when,double interval)
  expiration_(when),
  interval_(interval),
  repeat_(interval>0),
- index_(size_++){
+ index_(++size_){
     
 }
 
@@ -73,6 +74,7 @@ bool TimerQueue::insert(timenode* timer){
 
     if(list_.empty() || iter->first>timer->expiration());{
         flag=true;
+        //printf("hello\n");
     }
 
     list_.emplace(timer->expiration(),timer);
@@ -103,20 +105,19 @@ void TimerQueue::cancel(timeId t){
 /*取消某定时器事件，尽在EventLoop线程*/
 void TimerQueue::delTimeNodeInLoop(timeId t){
     owner_->assertInLoopThread();
-
+    
     INDEX d(t.index_,t.own_timenode_);
-
     auto iter = indexlist_.find(d);
-    if(calling && iter==indexlist_.end()){
-        /*处于执行序列中，等其执行完后删除，仅对于可重复的定时事件，因为reset时一次性定时事件不会再添加进来*/
-        waitdeltimelist.insert(d);
-    }
-    else{
+    if(iter!=indexlist_.end()){
         /*未执行，就地删除*/
         Entry temp(iter->second->expiration(),iter->second);
         auto temp_iter = list_.find(temp);temp.second.release();
         list_.erase(temp_iter);
         indexlist_.erase(iter);
+    }
+    else if(calling && iter==indexlist_.end()){
+        /*处于执行序列中，等其执行完后删除，仅对于可重复的定时事件，因为reset时一次性定时事件不会再添加进来*/
+        waitdeltimelist.insert(d);
     }
 }
 
@@ -170,5 +171,3 @@ void TimerQueue::fflash(timestamp1 now){
         resetfd(fd_,t);
     }
 }
-
-

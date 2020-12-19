@@ -10,6 +10,7 @@
 class Channel;
 class Poller;
 class TimerQueue;
+class timeId;
 
 /*事件轮询*/
 class EventLoop{
@@ -22,9 +23,10 @@ class EventLoop{
         bool isInCurrentThread();
         void upevents(Channel* c);
         void removeChannel(Channel* c);
-        void runat(const timestamp1& t,const TimerCallBack& f);
-        void runafter(int delay,const TimerCallBack& f);
-        void runevery(int interval,const TimerCallBack& f);
+        timeId runat(const timestamp1& t,const TimerCallBack& f);
+        timeId runafter(int delay,const TimerCallBack& f);
+        timeId runevery(int interval,const TimerCallBack& f);
+        void cancel(timeId id);
         static EventLoop* instance();
     private:
         typedef std::vector<Channel*> ChannelList;
