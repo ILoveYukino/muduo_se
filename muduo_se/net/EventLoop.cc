@@ -100,9 +100,10 @@ timeId EventLoop::runafter(int delay,const TimerCallBack& f){
     return runat(t,f);
 }
 
-timeId EventLoop::runevery(int interval,const TimerCallBack& f){
-    Clock::time_point t=Clock::now()+MS(interval);
-    return timerqueue_->addTimeNode(f,t,interval);
+timeId EventLoop::runevery(double interval,const TimerCallBack& f){
+    int diff = static_cast<int>(interval*Kmicseconds);
+    Clock::time_point t=Clock::now()+MS(diff);
+    return timerqueue_->addTimeNode(f,t,diff);
 }
 
 void EventLoop::cancel(timeId id){

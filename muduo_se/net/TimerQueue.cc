@@ -3,9 +3,9 @@
 #include "EventLoop.h"
 #include <cstring>
 #include <iostream>
+#include <iomanip>
 
 std::atomic_int64_t timenode::size_;
-const int Kmicseconds = 1000000;
 
 timenode::timenode(TimerCallBack f,timestamp1 when,double interval)
 :func_(f),
@@ -72,9 +72,21 @@ bool TimerQueue::insert(timenode* timer){
     bool flag=false;
     auto iter = list_.begin();
 
-    if(list_.empty() || iter->first>timer->expiration());{
+
+    if(list_.empty() || iter->first > timer->expiration());{
         flag=true;
-        //printf("hello\n");
+        printf("hello\n");
+        timestamp1 now=timer->expiration();
+        std::time_t nowstring=Clock::to_time_t(now);
+        auto diff = std::chrono::duration_cast<MS>(now.time_since_epoch()).count()%1000000;
+        std::cout<<"timer = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff<<std::endl;
+        if(!list_.empty()){
+            now=iter->first;
+            nowstring=Clock::to_time_t(now);
+            diff = std::chrono::duration_cast<MS>(now.time_since_epoch()).count()%1000000;
+            std::cout<<"iter = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff<<std::endl;
+        }
+        
     }
 
     list_.emplace(timer->expiration(),timer);
