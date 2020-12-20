@@ -14,7 +14,7 @@ void printTid(){
     timestamp1 now=Clock::now();
     std::time_t nowstring=Clock::to_time_t(now);
     auto diff = std::chrono::duration_cast<MS>(now.time_since_epoch()).count()%1000000;
-    std::cout<<"now = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff<<std::endl;
+    std::cout<<"main = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff<<std::endl;
 }
 
 void print(const char* msg){
@@ -29,8 +29,10 @@ void print(const char* msg){
 
 void cancel(timeId id){
     g_loop->cancel(id);
-    std::time_t now=Clock::to_time_t(Clock::now());
-    std::cout<<"cancelled at = "<<ctime(&now)<<std::endl;
+    timestamp1 now=Clock::now();
+    std::time_t nowstring=Clock::to_time_t(now);
+    auto diff = std::chrono::duration_cast<MS>(now.time_since_epoch()).count()%1000000;
+    std::cout<<"cancelled at = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff<<std::endl;
 }
 
 
@@ -41,20 +43,22 @@ int main(){
     EventLoop loop;
     g_loop=&loop;
     
-       
+    loop.runafter(1.5,std::bind(print,"once1.5"));   
+    loop.runafter(0.5,std::bind(print,"once0.5"));
     
-    loop.runafter(static_cast<int>(1.5*1000000),std::bind(print,"once1.5"));
-    //loop.runevery(2.3,std::bind(print,"every1"));
+    loop.runevery(2.7,std::bind(print,"every2.7"));
 
-    loop.runafter(static_cast<int>(3.7*1000000),std::bind(print,"once3.7"));
-    /*timeId t3 = loop.runevery(2,std::bind(print,"every2"));
+    loop.runafter(2.1,std::bind(print,"once2.1"));
 
-    loop.runafter(3,std::bind(print,"once3"));
+   
+    timeId t3 = loop.runevery(1.4,std::bind(print,"every1.4"));
 
-    timeId t6 = loop.runafter(4,std::bind(print,"once4"));
+    loop.runafter(3.1,std::bind(print,"once3.1"));
+
+    timeId t6 = loop.runafter(3.8,std::bind(print,"once3.8"));
     
     loop.runafter(7,std::bind(cancel,t6));
-    loop.runafter(4,std::bind(cancel,t3));*/
+    loop.runafter(4,std::bind(cancel,t3));
 
     loop.loop();
     printf("main loop exits\n");

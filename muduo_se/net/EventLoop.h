@@ -24,7 +24,7 @@ class EventLoop{
         void upevents(Channel* c);
         void removeChannel(Channel* c);
         timeId runat(const timestamp1& t,const TimerCallBack& f);
-        timeId runafter(int delay,const TimerCallBack& f);
+        timeId runafter(double delay,const TimerCallBack& f);
         timeId runevery(double interval,const TimerCallBack& f);
         void cancel(timeId id);
         static EventLoop* instance();

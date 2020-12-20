@@ -94,8 +94,8 @@ timeId EventLoop::runat(const timestamp1& t,const TimerCallBack& f){
     return timerqueue_->addTimeNode(f,t,0);
 }
 
-timeId EventLoop::runafter(int delay,const TimerCallBack& f){
-    Clock::time_point t=Clock::now()+MS(delay);
+timeId EventLoop::runafter(double delay,const TimerCallBack& f){
+    Clock::time_point t=Clock::now()+MS(static_cast<int>(delay*Kmicseconds));
     //return timerqueue_->addTimeNode(f,t,0);
     return runat(t,f);
 }

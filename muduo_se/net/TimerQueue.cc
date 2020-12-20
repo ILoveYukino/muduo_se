@@ -3,7 +3,6 @@
 #include "EventLoop.h"
 #include <cstring>
 #include <iostream>
-#include <iomanip>
 
 std::atomic_int64_t timenode::size_;
 
@@ -72,21 +71,60 @@ bool TimerQueue::insert(timenode* timer){
     bool flag=false;
     auto iter = list_.begin();
 
-
-    if(list_.empty() || iter->first > timer->expiration());{
-        flag=true;
-        printf("hello\n");
+    /*if(list_.empty()) {
         timestamp1 now=timer->expiration();
         std::time_t nowstring=Clock::to_time_t(now);
         auto diff = std::chrono::duration_cast<MS>(now.time_since_epoch()).count()%1000000;
-        std::cout<<"timer = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff<<std::endl;
-        if(!list_.empty()){
-            now=iter->first;
+        std::cout<<"iter = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff;
+        
+        printf("  kong\n");
+    }*/
+
+    /*if(!list_.empty()){
+        if(iter->first > timer->expiration()){
+            timestamp1 now=iter->first;
+            std::time_t nowstring=Clock::to_time_t(now);
+            auto diff = std::chrono::duration_cast<MS>(now.time_since_epoch()).count()%1000000;
+            std::cout<<"iter = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff;
+            
+            printf("  dayu  ");
+
+            now=timer->expiration();
             nowstring=Clock::to_time_t(now);
             diff = std::chrono::duration_cast<MS>(now.time_since_epoch()).count()%1000000;
-            std::cout<<"iter = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff<<std::endl;
+            std::cout<<"timer = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff<<std::endl;
         }
-        
+        else if(iter->first < timer->expiration()){
+            timestamp1 now=iter->first;
+            std::time_t nowstring=Clock::to_time_t(now);
+            auto diff = std::chrono::duration_cast<MS>(now.time_since_epoch()).count()%1000000;
+            std::cout<<"iter = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff;
+
+            printf("  xiaoyu  ");
+
+            now=timer->expiration();
+            nowstring=Clock::to_time_t(now);
+            diff = std::chrono::duration_cast<MS>(now.time_since_epoch()).count()%1000000;
+            std::cout<<"timer = "<<std::put_time(std::localtime(&nowstring),"%Y-%m-%d %H.%M.%S")<<"."<<diff<<std::endl;
+
+        }
+        else{
+            printf("error\n");
+        }
+    }*/
+
+
+    if(iter==list_.end() || timer->expiration()<iter->first){
+        flag=true;
+        /*if(list_.empty()){
+            printf("kong\n");
+        }
+        else if(iter->first > timer->expiration()){
+            printf("dayu\n");
+        }
+        else if(iter->first < timer->expiration()){
+            printf("xiaoyu\n");
+        }*/
     }
 
     list_.emplace(timer->expiration(),timer);
@@ -102,7 +140,7 @@ void TimerQueue::resetfd(int fd,timestamp1 t){
     struct itimerspec old_value;bzero(&old_value,sizeof(old_value));
 
     auto diff = std::chrono::duration_cast<MS>(t-Clock::now()).count();
-    if(diff<100) diff=100;
+    //if(diff<100) diff=100;
     new_value.it_value.tv_sec=static_cast<time_t>(diff/Kmicseconds);
     new_value.it_value.tv_nsec=static_cast<time_t>(diff%Kmicseconds*1000);
 
