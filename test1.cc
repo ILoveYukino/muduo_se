@@ -2,6 +2,8 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
+#include <concepts>
+#include <bit>
 
 using Clock = std::chrono::high_resolution_clock;
 using MS = std::chrono::microseconds;
@@ -26,4 +28,7 @@ int main(){
     nowstring = Clock::to_time_t(now);
     //std::cout<<"Epoch: "<<std::ctime(&nowstring)<<std::endl;
     print(now);
+
+    constexpr std::uint64_t ubt{std::bit_cast<std::uint64_t>(2.4)};
+    std::cout<<ubt<<std::endl;
 }

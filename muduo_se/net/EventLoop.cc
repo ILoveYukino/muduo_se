@@ -7,6 +7,7 @@
 #include "TimerQueue.h"
 #include <thread>
 #include <assert.h>
+#include <sys/eventfd.h>
 
 /*线程单例？*/
 thread_local EventLoop* t_loopthisthread=0;
@@ -16,9 +17,14 @@ EventLoop::EventLoop()
 :looping_(false),
  quit_(false),
  eventHandle_(false),
+ dopendfunc_(false),
  nowChannel_(nullptr),
  poller_(new EpollPoller(this)),
  timerqueue_(new TimerQueue(this)),
+ eventfd_(::eventfd(0, EFD_NONBLOCK|EFD_CLOEXEC)),
+ wakechannel_(new Channel(this,eventfd_)),
+ pendfunclists_(),
+ mutex_(),
  tid(gettid()){
      LOG_INIT("rrlog","myname",3);
      LOG_INFO("EventLoop creater %d in thread %d",this,tid);
@@ -28,6 +34,9 @@ EventLoop::EventLoop()
      else{
          t_loopthisthread=this;
      }
+    
+    wakechannel_->setReadCallback(std::bind(&EventLoop::handlread,this));
+    wakechannel_->enread();
 }
 
 EventLoop::~EventLoop(){
@@ -49,6 +58,7 @@ void EventLoop::loop(){
             nowChannel_=channel;
             nowChannel_->handleEvent(pollReturnTime_);
         }
+        dopendfunc();
         eventHandle_.store(false);
     }
 
@@ -88,6 +98,9 @@ void EventLoop::removeChannel(Channel* c){
 
 void EventLoop::quit(){
     quit_.store(true);
+    if(!isInCurrentThread()){
+        wake();
+    }
 }
 
 timeId EventLoop::runat(const timestamp1& t,const TimerCallBack& f){
@@ -108,4 +121,47 @@ timeId EventLoop::runevery(double interval,const TimerCallBack& f){
 
 void EventLoop::cancel(timeId id){
     timerqueue_->cancel(id);
+}
+
+void EventLoop::wake(){
+    uint64_t one=1;
+    ::write(eventfd_,&one,sizeof(one));
+}
+
+void EventLoop::handlread(){
+    uint64_t one=1;
+    ::read(eventfd_,(void*)&one,sizeof(one));
+}
+
+void EventLoop::runinloop(const std::function<void()>& f){
+    if(isInCurrentThread()){
+        f();
+    }
+    else{
+        queueloop(f);
+    }
+}
+
+void EventLoop::queueloop(const std::function<void()>& f){
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        pendfunclists_.push_back(f);
+    }
+
+    if(!isInCurrentThread() || dopendfunc_){
+        wake();
+    }
+}
+
+void EventLoop::dopendfunc(){
+    std::vector<std::function<void()>> temp;
+    dopendfunc_=true;
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        temp.swap(pendfunclists_);
+    }
+    for(auto& f:temp){
+        f();
+    }
+    dopendfunc_=false;
 }

@@ -21,3 +21,6 @@ target_link_libraries(PollPoller_test muduo_se_net)
 
 add_executable(timequeue_test timequeue.cc)
 target_link_libraries(timequeue_test muduo_se_net)
+
+add_executable(eventloopthread_test eventloopthread.cc)
+target_link_libraries(eventloopthread_test muduo_se_net)

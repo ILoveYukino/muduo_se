@@ -81,7 +81,7 @@ class TimerQueue{
 };
 
 /*对外接口，封装时间节点和时间堆*/
-class timeId{
+/*class timeId{
     public:
         timeId(timenode* owner=nullptr,int64_t id=0):own_timenode_(owner),index_(id){}
 
@@ -90,6 +90,6 @@ class timeId{
         timenode* own_timenode_;
         int64_t index_;
     private:
-};
+};*/
 
 #endif

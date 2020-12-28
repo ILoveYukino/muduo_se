@@ -1,6 +1,7 @@
 #include "TimerQueue.h"
 #include "base/rlog.h"
 #include "EventLoop.h"
+#include "TimeId.h"
 #include <cstring>
 #include <iostream>
 
@@ -52,7 +53,8 @@ TimerQueue::~TimerQueue(){
 /*添加定时器任务，可在其他线程中*/
 timeId TimerQueue::addTimeNode(const TimerCallBack& f,timestamp1 when,int interval){
     timenode* newnode = new timenode(f,when,interval);
-    addTimeNodeInLoop(newnode);
+    //addTimeNodeInLoop(newnode);//线程不安全，因为有很多线程都在注册定时器事件
+    owner_->runinloop(std::bind(&TimerQueue::addTimeNodeInLoop,this,newnode));
     return timeId(newnode,newnode->size());
 }
 
@@ -116,15 +118,6 @@ bool TimerQueue::insert(timenode* timer){
 
     if(iter==list_.end() || timer->expiration()<iter->first){
         flag=true;
-        /*if(list_.empty()){
-            printf("kong\n");
-        }
-        else if(iter->first > timer->expiration()){
-            printf("dayu\n");
-        }
-        else if(iter->first < timer->expiration()){
-            printf("xiaoyu\n");
-        }*/
     }
 
     list_.emplace(timer->expiration(),timer);
@@ -140,7 +133,7 @@ void TimerQueue::resetfd(int fd,timestamp1 t){
     struct itimerspec old_value;bzero(&old_value,sizeof(old_value));
 
     auto diff = std::chrono::duration_cast<MS>(t-Clock::now()).count();
-    //if(diff<100) diff=100;
+    if(diff<100) diff=100;
     new_value.it_value.tv_sec=static_cast<time_t>(diff/Kmicseconds);
     new_value.it_value.tv_nsec=static_cast<time_t>(diff%Kmicseconds*1000);
 
@@ -149,7 +142,8 @@ void TimerQueue::resetfd(int fd,timestamp1 t){
 
 /*取消某定时器事件*/
 void TimerQueue::cancel(timeId t){
-    delTimeNodeInLoop(t);
+    //delTimeNodeInLoop(t);//线程不安全
+    owner_->runinloop(std::bind(&TimerQueue::delTimeNodeInLoop,this,t));
 }
 
 /*取消某定时器事件，尽在EventLoop线程*/
