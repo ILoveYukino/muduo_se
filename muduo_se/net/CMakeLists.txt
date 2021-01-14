@@ -6,6 +6,9 @@ set(net_srcs
     EpollPoller.cc
     TimerQueue.cc
     EventLoopThread.cc
+    Socket.cc
+    IpAdress.cc
+    Accept.cc
 )
 
 add_library(muduo_se_net ${net_srcs})

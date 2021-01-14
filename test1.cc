@@ -2,8 +2,8 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
-#include <concepts>
 #include <bit>
+#include <regex>
 
 using Clock = std::chrono::high_resolution_clock;
 using MS = std::chrono::microseconds;
@@ -18,7 +18,7 @@ void print(timestamp1& t){
 }
 
 int main(){
-    timestamp1 now = Clock::now();
+    /*timestamp1 now = Clock::now();
     std::time_t nowstring = Clock::to_time_t(now);
     //std::cout<<"Epoch: "<<std::ctime(&nowstring)<<std::endl;
     print(now);
@@ -27,8 +27,14 @@ int main(){
     now+=MS(d);
     nowstring = Clock::to_time_t(now);
     //std::cout<<"Epoch: "<<std::ctime(&nowstring)<<std::endl;
-    print(now);
+    print(now);*/
 
-    constexpr std::uint64_t ubt{std::bit_cast<std::uint64_t>(2.4)};
-    std::cout<<ubt<<std::endl;
+    std::regex reg(":");
+    std::string ip = "192.168.3.7:8000";
+
+    std::sregex_token_iterator pos(ip.begin(),ip.end(),reg,-1),end;
+    while(pos!=end){
+        std::cout<<pos->str()<<std::endl;
+        pos++;
+    }
 }

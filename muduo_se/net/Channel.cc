@@ -8,9 +8,9 @@ int Channel::kNoEvent=0;
 int Channel::kreadEvent=POLLIN | POLLPRI;
 int Channel::kwriteEvent=POLLOUT;
 
-Channel::Channel(EventLoop* loop,int fd)
+Channel::Channel(EventLoop* loop,const int fds)
 :loop_(loop),
- fd_(fd),
+ fd_(fds),
  events_(0),
  revents_(0),
  index_(-1),
@@ -18,7 +18,7 @@ Channel::Channel(EventLoop* loop,int fd)
  ishandle(false),
  ishup(true)
 {
-
+    
 }
 
 Channel::~Channel(){
@@ -32,6 +32,7 @@ void Channel::tie(std::shared_ptr<void>& obj){
 
 void Channel::upevent(){
     loop_->upevents(this);
+    
 }
 
 void Channel::remove(){

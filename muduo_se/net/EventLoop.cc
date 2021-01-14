@@ -11,7 +11,7 @@
 
 /*线程单例？*/
 thread_local EventLoop* t_loopthisthread=0;
-const int ktimeoutms=0;//超时时间
+const int ktimeoutms=300;//超时时间
 
 EventLoop::EventLoop()
 :looping_(false),

@@ -13,7 +13,7 @@ class Channel{
         typedef std::function<void()> EventCallback;
         typedef std::function<void(timestamp)> ReadEventCallback;
 
-        Channel(EventLoop* loop,int fd_);
+        Channel(EventLoop* loop,const int fds);
         ~Channel();
         /*注册回调函数*/
         void setReadCallback(const ReadEventCallback& func){readcallback_=func;}/*加const原因： 临时变量作为引用传递，必须加const*/
