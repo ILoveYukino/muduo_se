@@ -42,7 +42,7 @@ class Channel{
         EventLoop* ownerloop() {return loop_;}
         void remove();
         /*和EventLoop建立联系，在使用是需要用弱指针探查此EventLoop是否存在*/
-        void tie(std::shared_ptr<void>&);
+        void tie(const std::shared_ptr<void>&);
         
     private:
         ReadEventCallback readcallback_;

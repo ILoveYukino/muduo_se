@@ -27,3 +27,6 @@ target_link_libraries(eventloopthread_test muduo_se_net)
 
 add_executable(socket_test socket.cc)
 target_link_libraries(socket_test muduo_se_net)
+
+add_executable(socket_test2 socket2.cc)
+target_link_libraries(socket_test2 muduo_se_net)

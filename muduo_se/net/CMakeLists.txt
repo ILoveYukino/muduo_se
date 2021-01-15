@@ -9,6 +9,8 @@ set(net_srcs
     Socket.cc
     IpAdress.cc
     Accept.cc
+    TcpServer.cc
+    TcpConnect.cc
 )
 
 add_library(muduo_se_net ${net_srcs})

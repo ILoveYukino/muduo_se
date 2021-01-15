@@ -24,7 +24,7 @@ void Acceptor::handleRead(){
     if(confd >= 0){
         Socket con(confd);
         if(func){
-            func(con,client_ip);
+            func(std::move(con),client_ip);
         }
     }
 }
