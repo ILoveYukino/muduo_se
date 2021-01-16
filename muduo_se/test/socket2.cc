@@ -5,7 +5,7 @@
 using namespace std;
 
 /*新连接创建回调*/
-void connect(const TcpConnectPtr& conptr){
+void connect2(const TcpConnectPtr& conptr){
     cout<<"new connection "<<conptr->getpeer().fromip()<<endl;
 }
 
@@ -19,6 +19,8 @@ int main(){
 
     IpAdress ip("127.0.0.1:8888");
     TcpServer server(&loop,ip);
+    server.setmessagecallback(message);
+    server.setnewconcallback(connect2);
     server.start();
 
     loop.loop();

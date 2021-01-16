@@ -11,7 +11,7 @@ Socket::Socket()
 }
 
 Socket::Socket(int fd):sockfd_(fd){
-    printf("fds: %d \n",sockfd_);
+    printf("Socket fds: %d \n",sockfd_);
 }
 
 Socket::~Socket(){

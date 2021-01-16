@@ -25,10 +25,10 @@ using ConnectCallback = std::function<void(const TcpConnectPtr&)>;
 using MessageCallback = std::function<void(const TcpConnectPtr&,char*,int)>;
 
 
-class TcpConnect : std::enable_shared_from_this<TcpConnect>{
+class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
     public:
         
-        TcpConnect(int fd,IpAdress& peer,IpAdress& seraddr,EventLoop* loop,int index);
+        TcpConnect(Socket&& fd,IpAdress& peer,IpAdress& seraddr,EventLoop* loop,int index);
         ~TcpConnect();
         void conestablish();
         void setnewconcallback(const ConnectCallback& func) {connectcallback_ = func;}

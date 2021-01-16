@@ -2,7 +2,7 @@
 #include "EventLoop.h"
 #include "base/rlog.h"
 
-TcpConnect::TcpConnect(int fd,IpAdress& peer,IpAdress& seraddr,EventLoop* loop,int index)
+TcpConnect::TcpConnect(Socket&& fd,IpAdress& peer,IpAdress& seraddr,EventLoop* loop,int index)
 :loop_(loop),
  peer_(peer),
  seraddr_(seraddr),
@@ -18,9 +18,12 @@ TcpConnect::~TcpConnect(){
 
 void TcpConnect::conestablish(){
     loop_->assertInLoopThread();
+    
     channel_->tie(shared_from_this());
+    
     channel_->enread();
     connectcallback_(shared_from_this());
+    
 }
 
 /*读事件，读出消息给messagecallback处理*/

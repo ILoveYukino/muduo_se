@@ -20,11 +20,12 @@ void TcpServer::start(){
 
 void TcpServer::newconn(Socket&& fd,IpAdress& peer){
     loop_acceptor->assertInLoopThread();
-    TcpConnectPtr newptr = std::make_shared<TcpConnect>(fd.fd(),peer,serveraddr_,loop_acceptor,connid_);
+    TcpConnectPtr newptr = std::make_shared<TcpConnect>(std::move(fd),peer,serveraddr_,loop_acceptor,connid_);
+    //TcpConnectPtr newptr(new TcpConnect(fd.fd(),peer,serveraddr_,loop_acceptor,connid_));
     newptr->setnewconcallback(connectcallback_);
     newptr->setmessagecallback(messagecallback_);
     newptr->conestablish();
-    tcpconlist.push_back(std::move(newptr));
+    tcpconlist.push_back(newptr);
     LOG_INFO("new connection %d build. server ip:port : %s peer ip:port : %s",connid_,serveraddr_.fromip().c_str(),peer.fromip().c_str());
     printf("new connection %d build. server ip:port : %s peer ip:port : %s",connid_,serveraddr_.fromip().c_str(),peer.fromip().c_str());
     connid_++;
