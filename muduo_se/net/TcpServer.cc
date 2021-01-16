@@ -27,7 +27,7 @@ void TcpServer::newconn(Socket&& fd,IpAdress& peer){
     newptr->conestablish();
     tcpconlist.push_back(newptr);
     LOG_INFO("new connection %d build. server ip:port : %s peer ip:port : %s",connid_,serveraddr_.fromip().c_str(),peer.fromip().c_str());
-    printf("new connection %d build. server ip:port : %s peer ip:port : %s",connid_,serveraddr_.fromip().c_str(),peer.fromip().c_str());
+    //printf("new connection %d build. server ip:port : %s peer ip:port : %s \n",connid_,serveraddr_.fromip().c_str(),peer.fromip().c_str());
     connid_++;
 }
 

@@ -11,6 +11,7 @@ class Socket
 public:
     explicit Socket();
     Socket(int fd);
+    Socket(Socket&& fd);
     ~Socket();
 
     bool bind(IpAdress& ip);
@@ -24,6 +25,7 @@ public:
 
 private:
     int sockfd_;
+    void setfd(int fd);
 };
 
 

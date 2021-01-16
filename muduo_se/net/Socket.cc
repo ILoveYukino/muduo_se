@@ -14,6 +14,10 @@ Socket::Socket(int fd):sockfd_(fd){
     printf("Socket fds: %d \n",sockfd_);
 }
 
+Socket::Socket(Socket&& fd):sockfd_(fd.fd()){
+    fd.setfd(-1);
+}
+
 Socket::~Socket(){
     ::close(sockfd_);
 }
@@ -52,6 +56,6 @@ void Socket::setreuseaddr(){
     ::setsockopt(sockfd_,SOL_SOCKET,SO_REUSEADDR,&a,sizeof(a));
 }
 
-/*int Socket::fd(){
-    return sockfd_;
-}*/
+void Socket::setfd(int fd){
+    sockfd_ = fd;
+}

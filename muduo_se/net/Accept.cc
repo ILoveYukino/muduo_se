@@ -18,14 +18,13 @@ void Acceptor::listen(){
 }
 
 void Acceptor::handleRead(){
-    printf("\nAcceptor::handleRead\n");
     loop_->assertInLoopThread();
     IpAdress client_ip;
     int confd = listenfd_.accept(client_ip);
     if(confd >= 0){
-        //Socket con(confd);
+        Socket con(confd);
         if(func){
-            func(Socket(confd),client_ip);
+            func(std::move(con),client_ip);
         }
     }
 }

@@ -6,7 +6,7 @@ using namespace std;
 
 /*新连接创建回调*/
 void connect2(const TcpConnectPtr& conptr){
-    cout<<"new connection "<<conptr->getpeer().fromip()<<endl;
+    cout<<"connect2 : new connection "<<conptr->getpeer().fromip()<<endl;
 }
 
 /*可读事件来到回调*/
