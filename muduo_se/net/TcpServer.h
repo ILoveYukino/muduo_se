@@ -20,7 +20,7 @@ class TcpServer{
         void start();
         void setnewconcallback(const ConnectCallback& func) {connectcallback_ = func;}
         void setmessagecallback(const MessageCallback& func) {messagecallback_ = func;}
-        void setclosecallback(const CloseCloseback& func) {closecallback_ = func;}
+        void setclosecallback(const CloseCallback& func) {closecallback_ = func;}
         bool starting() {return starting_;}
     private:
         void newconn(Socket&& fd,IpAdress& peer);
@@ -31,7 +31,7 @@ class TcpServer{
         std::vector<TcpConnectPtr> tcpconlist;
         ConnectCallback connectcallback_;
         MessageCallback messagecallback_;
-        CloseCloseback closecallback_;
+        CloseCallback closecallback_;
         bool starting_;
         int connid_;
         

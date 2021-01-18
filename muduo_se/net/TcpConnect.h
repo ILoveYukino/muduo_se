@@ -23,7 +23,7 @@ class TcpConnect;
 using TcpConnectPtr = std::shared_ptr<TcpConnect>;
 using ConnectCallback = std::function<void(const TcpConnectPtr&)>;
 using MessageCallback = std::function<void(const TcpConnectPtr&,char*,int)>;
-using CloseCloseback = std::function<void(const TcpConnectPtr&)>;
+using CloseCallback = std::function<void(const TcpConnectPtr&)>;
 
 class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
     public:
@@ -33,7 +33,7 @@ class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
         void conestablish();
         void setnewconcallback(const ConnectCallback& func) {connectcallback_ = func;}
         void setmessagecallback(const MessageCallback& func) {messagecallback_ = func;}
-        void setclosecallback(const CloseCloseback& func) {closecallback_ = func;}
+        void setclosecallback(const CloseCallback& func) {closecallback_ = func;}
         void handleread(timestamp t);
         void handledel();
         
@@ -49,7 +49,7 @@ class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
         std::shared_ptr<Channel> channel_;
         ConnectCallback connectcallback_;
         MessageCallback messagecallback_;
-        CloseCloseback  closecallback_;
+        CloseCallback  closecallback_;
 };
 
 
