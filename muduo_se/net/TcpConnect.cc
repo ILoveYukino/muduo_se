@@ -9,6 +9,7 @@ TcpConnect::TcpConnect(Socket&& fd,IpAdress& peer,IpAdress& seraddr,EventLoop* l
  fd_(std::move(fd)),
  index_(index),
  channel_(new Channel(loop_,fd_.fd())){
+     printf("TcpConnect::TcpConnect peer %s \n",peer.fromip().c_str());
      fd_.setkeepalive();
      channel_->setReadCallback(std::bind(&TcpConnect::handleread,this,std::placeholders::_1));
 }
@@ -23,7 +24,7 @@ void TcpConnect:: conestablish(){
     
     channel_->enread();
     connectcallback_(shared_from_this());
-    
+    printf("--------------------------------------\n");
 }
 
 /*读事件，读出消息给messagecallback处理*/
@@ -35,6 +36,7 @@ void TcpConnect::handleread(timestamp t){
         messagecallback_(shared_from_this(),revbuf,1024);
     }
     else if(n==0){
+        printf("TcpConnect::handleread \n");
         handledel();
     }
     else{
@@ -56,6 +58,10 @@ void TcpConnect::handledel(){
 /*在EventLoop中取消此channel*/
 void TcpConnect::delchannel(){
     loop_->assertInLoopThread();
+    
+    
     channel_->disallevent();
     loop_->removeChannel(channel_.get());
+
+    printf("TcpConnect %d del. peer: %s \n",index_,peer_.fromip().c_str());
 }

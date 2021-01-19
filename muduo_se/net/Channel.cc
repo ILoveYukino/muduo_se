@@ -58,6 +58,7 @@ void Channel::handleEventwithguard(timestamp recetiveTime){
     ishandle=true;
 
     if((revents_&POLLHUP) && !(revents_&POLLIN)){
+        printf("Channel::handleEventwithguard close \n");
         if(ishup){
             LOG_WARN("Channel::handle_event() POLLHUP");
         }
@@ -73,6 +74,7 @@ void Channel::handleEventwithguard(timestamp recetiveTime){
     }
 
     if(revents_ & (POLLIN | POLLHUP | POLLPRI)){
+        printf("Channel::handleEventwithguard read \n");
         if(readcallback_) readcallback_(recetiveTime);
     }
 

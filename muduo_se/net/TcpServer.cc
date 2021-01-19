@@ -36,6 +36,7 @@ void TcpServer::removeconnect(const TcpConnectPtr& con){
     int index = con->getindex();
     tcpconlist.erase(tcpconlist.begin()+index);
     loop_acceptor->runinloop(std::bind(&TcpConnect::delchannel,con));
+    printf("--------------------------------------\n");
 }
 
 TcpServer::~TcpServer(){
