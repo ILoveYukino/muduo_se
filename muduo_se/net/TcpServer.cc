@@ -26,7 +26,8 @@ void TcpServer::newconn(Socket&& fd,IpAdress& peer){
     newptr->setmessagecallback(messagecallback_);
     newptr->setclosecallback(std::bind(&TcpServer::removeconnect,this,std::placeholders::_1));
     newptr->conestablish();
-    tcpconlist.push_back(newptr);
+    //tcpconlist.push_back(newptr);
+    tcpconlists[connid_] = newptr;
     LOG_INFO("new connection %d build. server ip:port : %s peer ip:port : %s",connid_,serveraddr_.fromip().c_str(),peer.fromip().c_str());
     //printf("new connection %d build. server ip:port : %s peer ip:port : %s \n",connid_,serveraddr_.fromip().c_str(),peer.fromip().c_str());
     connid_++;
@@ -35,7 +36,9 @@ void TcpServer::newconn(Socket&& fd,IpAdress& peer){
 void TcpServer::removeconnect(const TcpConnectPtr& con){
     int index = con->getindex();
     /*潜在问题： tcpconlist的位置随删除而减少，但是TcpConnect的index还是原来的那个*/
-    tcpconlist.erase(tcpconlist.begin()+index);
+    //tcpconlist.erase(tcpconlist.begin()+index);
+    assert(tcpconlists[index]->getindex() == index);
+    tcpconlists.erase(index);
     loop_acceptor->runinloop(std::bind(&TcpConnect::delchannel,con));
     printf("--------------------------------------\n");
 }

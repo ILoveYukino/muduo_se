@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <functional>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "IpAdress.h"
@@ -28,7 +28,8 @@ class TcpServer{
         EventLoop* loop_acceptor;
         IpAdress serveraddr_;
         std::unique_ptr<Acceptor> acceptorptr;
-        std::vector<TcpConnectPtr> tcpconlist;
+        //std::vector<TcpConnectPtr> tcpconlist;
+        std::unordered_map<int,TcpConnectPtr> tcpconlists;
         ConnectCallback connectcallback_;
         MessageCallback messagecallback_;
         CloseCallback closecallback_;
