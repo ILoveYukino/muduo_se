@@ -73,7 +73,7 @@ void EpollPoller::upChannel(Channel* c){
     if(id==knew || id==kdel){
         if(id==knew){
             channels_[c->fd()]=c;
-            printf("EpollPoller::upChannel id==knew || id==kdel fd = %d \n",c->fd());
+            printf("EpollPoller::upChannel EPOLL_CTL_ADD fd = %d \n",c->fd());
         }
         else{
             assert(channels_.find(c->fd())!=channels_.end());
@@ -89,11 +89,11 @@ void EpollPoller::upChannel(Channel* c){
         assert(c->index()==kin);
         if(c->isNoEvent()){
             c->setindex(kdel);
-            printf("EpollPoller::upChannel c->isNoEvent() EPOLL_CTL_DEL\n");
+            printf("EpollPoller::upChannel EPOLL_CTL_DEL fd = %d\n",c->fd());
             update(c,EPOLL_CTL_DEL);
         }
         else{
-            printf("EpollPoller::upChannel !c->isNoEvent() EPOLL_CTL_MOD\n");
+            printf("EpollPoller::upChannel EPOLL_CTL_MOD fd = %d\n",c->fd());
             update(c,EPOLL_CTL_MOD);
         }
     }
@@ -110,7 +110,6 @@ void EpollPoller::removeChannel(Channel* c){
     LOG_INFO("remove Channel : fd = %d,event = %d,index = %d",c->fd(),c->events(),c->index());
     channels_.erase(c->fd());
     if(c->index()==kin){
-        printf("EpollPoller::removeChannel c->index()==kin \n");
         update(c,EPOLL_CTL_DEL);
     }
     c->setindex(knew);
@@ -120,7 +119,6 @@ void EpollPoller::FillActiceChannel(int numEvents,ChannelList* activechannel){
     assert(numEvents<=events_.size());
     for(int i=0;i<numEvents;i++){
         Channel* channel=static_cast<Channel*>(events_[i].data.ptr);
-        std::cout<<"EpollPoller::FillActiceChannel happened fd = "<<channel->fd()<<std::endl;
         auto iter=channels_.find(channel->fd());
         assert(iter!=channels_.end());
         assert(iter->second==channel);

@@ -34,6 +34,7 @@ void TcpServer::newconn(Socket&& fd,IpAdress& peer){
 
 void TcpServer::removeconnect(const TcpConnectPtr& con){
     int index = con->getindex();
+    /*潜在问题： tcpconlist的位置随删除而减少，但是TcpConnect的index还是原来的那个*/
     tcpconlist.erase(tcpconlist.begin()+index);
     loop_acceptor->runinloop(std::bind(&TcpConnect::delchannel,con));
     printf("--------------------------------------\n");

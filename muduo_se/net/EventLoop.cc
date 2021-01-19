@@ -135,11 +135,9 @@ void EventLoop::handlread(){
 
 void EventLoop::runinloop(const std::function<void()>& f){
     if(isInCurrentThread()){
-        printf("EventLoop::runinloop isInCurrentThread()\n");
         f();
     }
     else{
-        printf("EventLoop::runinloop NoInCurrentThread()\n");
         queueloop(f);
     }
 }

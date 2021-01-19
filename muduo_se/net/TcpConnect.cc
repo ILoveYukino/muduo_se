@@ -9,7 +9,7 @@ TcpConnect::TcpConnect(Socket&& fd,IpAdress& peer,IpAdress& seraddr,EventLoop* l
  fd_(std::move(fd)),
  index_(index),
  channel_(new Channel(loop_,fd_.fd())){
-     printf("TcpConnect::TcpConnect peer %s \n",peer.fromip().c_str());
+     printf("TcpConnect::TcpConnect peer %s connect fd = %d \n",peer.fromip().c_str(),fd_.fd());
      fd_.setkeepalive();
      channel_->setReadCallback(std::bind(&TcpConnect::handleread,this,std::placeholders::_1));
 }
@@ -36,7 +36,7 @@ void TcpConnect::handleread(timestamp t){
         messagecallback_(shared_from_this(),revbuf,1024);
     }
     else if(n==0){
-        printf("TcpConnect::handleread \n");
+        LOG_INFO("TcpConnect %d : DEL EVENT HAPPEND. peer: %s seraddr %s",index_,peer_.fromip().c_str(),seraddr_.fromip().c_str());
         handledel();
     }
     else{

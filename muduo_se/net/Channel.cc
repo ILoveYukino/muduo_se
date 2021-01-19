@@ -74,7 +74,7 @@ void Channel::handleEventwithguard(timestamp recetiveTime){
     }
 
     if(revents_ & (POLLIN | POLLHUP | POLLPRI)){
-        printf("Channel::handleEventwithguard read \n");
+        printf("fd = %d , Channel::handleEventwithguard read \n",fd_);
         if(readcallback_) readcallback_(recetiveTime);
     }
 
