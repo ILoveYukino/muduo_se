@@ -1,72 +1,138 @@
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>						
+#include <cstring>						
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>	
+#include <vector>
+#include <sys/uio.h>
+
+using namespace std;
+
+class Buffer{
+    public:
+        Buffer(int len = 1024);
+        ~Buffer();
+        void read(int fd);
+        void write(int fd);
+
+        void append(const char* buf,int len);
+        void append(std::string& buf);
+        void append(std::vector<char>& buf);
+
+        int readsize();
+        int writesize();
+
+        bool full();
+        bool empty();
+        void showinfo();
+    private:
+        int readindex_;
+        int writeindex_;
+
+        std::vector<char> buffer_;
+        void swap();
+        void resize(int len);
+
+};
 			
 int main()
 {
-	unsigned short port = 8888;			
-	
-	int sockfd = socket(AF_INET, SOCK_STREAM, 0);   
-	if(sockfd < 0)
-	{
-		perror("socket");
-		exit(-1);
-	}
-	
-	struct sockaddr_in my_addr;
-	bzero(&my_addr, sizeof(my_addr));	     
-	my_addr.sin_family = AF_INET;
-	my_addr.sin_port   = htons(port);
-	my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	int a=1;
-    ::setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&a,sizeof(a));
-	int err_log = bind(sockfd, (struct sockaddr*)&my_addr, sizeof(my_addr));
-	if( err_log != 0)
-	{
-		perror("binding");
-		close(sockfd);		
-		exit(-1);
-	}
-	
-	err_log = listen(sockfd, 4096);	// 等待队列为2
-	
-	printf("listen client @port=%d...\n",port);
- 
-	int i = 0;
-	
-	while(1)
-	{	
-	
-		struct sockaddr_in client_addr;		   
-		char cli_ip[INET_ADDRSTRLEN] = "";	   
-		socklen_t cliaddr_len = sizeof(client_addr);    
-		
-		int connfd;
-		connfd = accept4(sockfd, (struct sockaddr*)&client_addr, &cliaddr_len,SOCK_CLOEXEC | SOCK_NONBLOCK);       
-		if(connfd <= 0)
-		{
-			perror("accept");
-			continue;
-		}
- 
-		inet_ntop(AF_INET, &client_addr.sin_addr, cli_ip, INET_ADDRSTRLEN);
-		printf("-----------%d------\n", ++i);
-		printf("client ip=%s,port=%d\n", cli_ip,ntohs(client_addr.sin_port));
-		
-		char recv_buf[512] = {0};
-		while( recv(connfd, recv_buf, sizeof(recv_buf), 0) > 0 )
-		{
-			printf("recv data ==%s\n",recv_buf);
-			break;
-		}
-		
-		close(connfd);     //关闭已连接套接字
-		//printf("client closed!\n");
-	}
-	close(sockfd);         //关闭监听套接字
-	return 0;
+	Buffer b1;
+	b1.read(STDIN_FILENO);
+	b1.write(STDOUT_FILENO);
+}
+
+Buffer::Buffer(int len)
+:buffer_(len),
+ readindex_(0),
+ writeindex_(0){
+
+}
+
+Buffer::~Buffer(){
+
+}
+
+void Buffer::showinfo(){
+    cout<<"readindex_"<<readindex_<<endl;
+    cout<<"writeindex_"<<writeindex_<<endl;
+    for(int i = readindex_;i<writeindex_;i++){
+        cout<<buffer_[i];
+    }
+    cout<<endl;
+}
+
+void Buffer::read(int fd){
+    /*readindex前移*/
+    char temp[1024];
+    bzero(temp,sizeof(temp));
+    struct iovec iov[2];
+    iov[0].iov_base = buffer_.data()+writeindex_;
+    iov[0].iov_len = writesize();
+    iov[1].iov_base = temp;
+    iov[1].iov_len = 1024;
+
+    int len = ::readv(fd,iov,2);
+    if(len <= writesize()){
+        writeindex_ += len;
+    }
+    else{
+        writeindex_ = buffer_.size();
+        append(temp,len - writeindex_);
+    }
+}
+
+void Buffer::write(int fd){
+    int len = ::write(fd,buffer_.data()+readindex_,readsize());
+	readindex_ += len;
+    cout<<endl;
+}
+
+
+void Buffer::append(const char* buf,int len){
+    if(len > writesize() && len <= writesize() + readindex_){
+        /*不可以直接存放，但是加上空闲空间可以存放，需调整待读数据存放位置*/
+        swap();
+        std::copy(buf,buf+len,buffer_.data()+writeindex_);
+    }
+    else{
+        /*无法存放，必须扩容*/
+        resize(len);
+        std::copy(buf,buf+len,buffer_.data()+writeindex_);
+    }
+
+    writeindex_ += len;
+}
+
+void Buffer::append(std::string& buf){
+    append(buf.c_str(),buf.length());
+}
+
+void Buffer::append(std::vector<char>& buf){
+    append(buf.data(),buf.size());
+}
+
+int Buffer::readsize(){
+    return writeindex_ - readindex_;
+}
+
+int Buffer::writesize(){
+    return buffer_.size() - writeindex_;
+}
+
+bool Buffer::empty(){
+    return writeindex_ == readindex_; 
+}
+
+void Buffer::swap(){
+    std::copy(buffer_.data()+readindex_,buffer_.data()+writeindex_,buffer_.data());
+    writeindex_ = readsize();
+    readindex_ = 0;
+}
+
+void Buffer::resize(int len){
+    buffer_.resize(buffer_.size() + len + 1);
 }

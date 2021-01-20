@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <fstream>
+#include <vector>
+#include <cstring>
 
 class cell_buffer{
     public:
@@ -34,6 +36,32 @@ class cell_buffer{
         uint32_t len_;
         uint32_t index_;
         char* data; 
+};
+
+class Buffer{
+    public:
+        Buffer(int len = 1024);
+        ~Buffer();
+        void read(int fd);
+        void write(int fd);
+
+        void append(const char* buf,int len);
+        void append(std::string& buf);
+        void append(std::vector<char>& buf);
+
+        int readsize();
+        int writesize();
+
+        bool full();
+        bool empty();
+    private:
+        int readindex_;
+        int writeindex_;
+
+        std::vector<char> buffer_;
+        void swap();
+        void resize(int len);
+
 };
 
 #endif
