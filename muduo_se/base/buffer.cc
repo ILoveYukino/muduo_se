@@ -53,7 +53,7 @@ Buffer::~Buffer(){
     buffer_.clear();
 }
 
-void Buffer::read(int fd){
+ssize_t Buffer::read(int fd){
     /*readindex前移*/
     char temp[1024];
     bzero(temp,sizeof(temp));
@@ -71,11 +71,13 @@ void Buffer::read(int fd){
         writeindex_ = buffer_.size();
         append(temp,len - writeindex_);
     }
+    return len;
 }
 
-void Buffer::write(int fd){
+ssize_t Buffer::write(int fd){
     int len = ::write(fd,buffer_.data()+readindex_,readsize());
 	readindex_ += len;
+    return len;
 }
 
 
@@ -83,14 +85,12 @@ void Buffer::append(const char* buf,int len){
     if(len > writesize() && len <= writesize() + readindex_){
         /*不可以直接存放，但是加上空闲空间可以存放，需调整待读数据存放位置*/
         swap();
-        std::copy(buf,buf+len,buffer_.data()+writeindex_);
     }
     else{
         /*无法存放，必须扩容*/
         resize(len);
-        std::copy(buf,buf+len,buffer_.data()+writeindex_);
     }
-
+    std::copy(buf,buf+len,buffer_.data()+writeindex_);
     writeindex_ += len;
 }
 
@@ -108,6 +108,14 @@ int Buffer::readsize(){
 
 int Buffer::writesize(){
     return buffer_.size() - writeindex_;
+}
+
+char* Buffer::readindex(){
+    return buffer_.data()+readindex_;
+}
+
+char* Buffer::writeindex(){
+    return buffer_.data()+writeindex_;
 }
 
 bool Buffer::empty(){

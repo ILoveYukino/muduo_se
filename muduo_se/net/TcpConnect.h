@@ -4,12 +4,12 @@
 #include "IpAdress.h"
 #include "Socket.h"
 #include "Channel.h"
+#include "base/buffer.h"
 #include <memory>
 #include <functional>
 #include <string>
 
 class EventLoop;
-
 /*
     记录：
     1、为何Channel使用shared智能指针？
@@ -22,7 +22,7 @@ class EventLoop;
 class TcpConnect;
 using TcpConnectPtr = std::shared_ptr<TcpConnect>;
 using ConnectCallback = std::function<void(const TcpConnectPtr&)>;
-using MessageCallback = std::function<void(const TcpConnectPtr&,char*,int)>;
+using MessageCallback = std::function<void(const TcpConnectPtr&,Buffer*,timestamp)>;
 using CloseCallback = std::function<void(const TcpConnectPtr&)>;
 
 class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
@@ -35,11 +35,16 @@ class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
         void setmessagecallback(const MessageCallback& func) {messagecallback_ = func;}
         void setclosecallback(const CloseCallback& func) {closecallback_ = func;}
         void handleread(timestamp t);
+        void handlewrite();
         void handledel();
         
         void delchannel();
+        void send(const char* str,int len);
+        void send(std::string& str);
+        void sendinloop(const char* str,int len);
         IpAdress& getpeer(){return peer_;}
         int getindex() {return index_;}
+        int fd() {return fd_.fd();}
     private:
         EventLoop* loop_;
         IpAdress peer_;
@@ -47,6 +52,8 @@ class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
         Socket fd_;
         int index_;
         std::shared_ptr<Channel> channel_;
+        std::unique_ptr<Buffer> inbuffer_;
+        std::unique_ptr<Buffer> outbuffer_;
         ConnectCallback connectcallback_;
         MessageCallback messagecallback_;
         CloseCallback  closecallback_;

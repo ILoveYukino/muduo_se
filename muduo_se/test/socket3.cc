@@ -12,13 +12,16 @@ void connect2(const TcpConnectPtr& conptr){
 
 /*可读事件来到回调*/
 void message(const TcpConnectPtr& conptr,Buffer* buf,timestamp t){
-    cout<<"receive message: "<<buf->readindex()<<endl;
+    std::string s1 = "return : ";s1+=buf->readindex();
+    buf->write(STDOUT_FILENO);
+    //std::string s2(10000000,'a');
+    conptr->send(s1);
+    //conptr->send(s2);
     cout<<"--------------------------------------"<<endl;
 }
 
 int main(){
     EventLoop loop;
-
     IpAdress ip("127.0.0.1:8888");
     TcpServer server(&loop,ip);
     server.setmessagecallback(message);

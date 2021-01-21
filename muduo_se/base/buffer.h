@@ -42,8 +42,8 @@ class Buffer{
     public:
         Buffer(int len = 1024);
         ~Buffer();
-        void read(int fd);
-        void write(int fd);
+        ssize_t read(int fd);
+        ssize_t write(int fd);
 
         void append(const char* buf,int len);
         void append(std::string& buf);
@@ -51,6 +51,9 @@ class Buffer{
 
         int readsize();
         int writesize();
+
+        char* readindex();
+        char* writeindex();
 
         bool full();
         bool empty();

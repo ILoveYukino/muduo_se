@@ -22,7 +22,7 @@ class Channel{
         void setErrorCallbakc(const EventCallback& func){errorcallback_=func;}
         /*设置读写回调*/
         void enread() {events_ |= kreadEvent;upevent();}
-        void enwrite() {events_ |+ kwriteEvent;upevent();}
+        void enwrite() {events_ |= kwriteEvent;upevent();}
         void diswrite() {events_ &= ~kwriteEvent;upevent();}
         void disallevent() {events_ = kNoEvent;upevent();}
         /*处理、更新事件*/
