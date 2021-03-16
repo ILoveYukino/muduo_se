@@ -5,7 +5,6 @@
 EventLoopThread::EventLoopThread()
 :exiting_(false),
  loop_(nullptr),
- t_(),
  mutex_(),
  cond_(),
  func_(nullptr){
@@ -14,33 +13,39 @@ EventLoopThread::EventLoopThread()
 
 EventLoopThread::~EventLoopThread(){
     exiting_=true;
-    loop_->quit();
+    if(loop_){
+        loop_->quit();
+        t_.join();
+    }
+    
 }
 
 EventLoop* EventLoopThread::start(){
-    t_=std::jthread(std::bind(&EventLoopThread::threadfunc,this));
+    
+    t_=std::thread(std::bind(&EventLoopThread::threadfunc,this));
+    EventLoop* loop = nullptr;
     {
         std::unique_lock<std::mutex> lock(mutex_);
-        cond_.wait(lock,[&,this](){
-            return loop_!=nullptr;
-        });
-        cond_.notify_one();
+        while(loop_==nullptr){
+            cond_.wait(lock);
+        }
+        loop = loop_;
     }
     return loop_;
 }
 
 void EventLoopThread::threadfunc(){
     EventLoop loop;
-    
-    if(func_){
-        func_(loop_);
-    }
+     
+    /*if(func_){
+        func_(loop);
+    }*/
     
     {
         std::unique_lock<std::mutex> lock_(mutex_);
         loop_=&loop;
-        cond_.notify_one();
+        cond_.notify_all();
     }
-
+    printf("now eventloop tid = %d \n",gettid());
     loop.loop();
 }

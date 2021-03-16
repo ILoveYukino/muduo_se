@@ -22,7 +22,7 @@ TcpConnect::~TcpConnect(){
 
 void TcpConnect:: conestablish(){
     loop_->assertInLoopThread();
-    
+    printf("test tid = %d \n",gettid());
     channel_->tie(shared_from_this());
     
     channel_->enread();

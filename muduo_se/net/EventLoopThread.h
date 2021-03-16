@@ -20,7 +20,7 @@ class EventLoopThread{
         EventLoopFunc func_;
         std::mutex mutex_;
         std::condition_variable cond_;
-        std::jthread t_;
+        std::thread t_;
         bool exiting_;
         EventLoop* loop_;
 };

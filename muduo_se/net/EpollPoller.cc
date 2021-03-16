@@ -73,7 +73,7 @@ void EpollPoller::upChannel(Channel* c){
     if(id==knew || id==kdel){
         if(id==knew){
             channels_[c->fd()]=c;
-            printf("EpollPoller::upChannel EPOLL_CTL_ADD fd = %d \n",c->fd());
+            //printf("EpollPoller::upChannel EPOLL_CTL_ADD fd = %d \n",c->fd());
         }
         else{
             assert(channels_.find(c->fd())!=channels_.end());
@@ -89,11 +89,11 @@ void EpollPoller::upChannel(Channel* c){
         assert(c->index()==kin);
         if(c->isNoEvent()){
             c->setindex(kdel);
-            printf("EpollPoller::upChannel EPOLL_CTL_DEL fd = %d\n",c->fd());
+            //printf("EpollPoller::upChannel EPOLL_CTL_DEL fd = %d\n",c->fd());
             update(c,EPOLL_CTL_DEL);
         }
         else{
-            printf("EpollPoller::upChannel EPOLL_CTL_MOD fd = %d\n",c->fd());
+            //printf("EpollPoller::upChannel EPOLL_CTL_MOD fd = %d\n",c->fd());
             update(c,EPOLL_CTL_MOD);
         }
     }

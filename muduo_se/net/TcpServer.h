@@ -12,10 +12,11 @@
 
 class EventLoop;
 class Acceptor;
+class EventLoopThreadPool;
 
 class TcpServer{
     public:
-        TcpServer(EventLoop* loop,IpAdress& serveraddr);
+        TcpServer(EventLoop* loop,IpAdress& serveraddr,bool multi = false,int num = 8);
         ~TcpServer();
         void start();
         void setnewconcallback(const ConnectCallback& func) {connectcallback_ = func;}
@@ -25,17 +26,18 @@ class TcpServer{
     private:
         void newconn(Socket&& fd,IpAdress& peer);
         void removeconnect(const TcpConnectPtr& con);
+        void removeconnectloop(const TcpConnectPtr& con);
         EventLoop* loop_acceptor;
         IpAdress serveraddr_;
         std::unique_ptr<Acceptor> acceptorptr;
-        //std::vector<TcpConnectPtr> tcpconlist;
+        std::shared_ptr<EventLoopThreadPool> eventpool;
         std::unordered_map<int,TcpConnectPtr> tcpconlists;
         ConnectCallback connectcallback_;
         MessageCallback messagecallback_;
         CloseCallback closecallback_;
         bool starting_;
         int connid_;
-        
+        bool multi_reactor;
 };
 
 

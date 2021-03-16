@@ -24,6 +24,7 @@ using TcpConnectPtr = std::shared_ptr<TcpConnect>;
 using ConnectCallback = std::function<void(const TcpConnectPtr&)>;
 using MessageCallback = std::function<void(const TcpConnectPtr&,Buffer*,timestamp)>;
 using CloseCallback = std::function<void(const TcpConnectPtr&)>;
+using WriteCallback = std::function<void()>;
 
 class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
     public:
@@ -45,6 +46,7 @@ class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
         IpAdress& getpeer(){return peer_;}
         int getindex() {return index_;}
         int fd() {return fd_.fd();}
+        EventLoop* getloop() {return loop_;}
     private:
         EventLoop* loop_;
         IpAdress peer_;

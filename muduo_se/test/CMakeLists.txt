@@ -33,3 +33,6 @@ target_link_libraries(socket_test2 muduo_se_net)
 
 add_executable(socket_test3 socket3.cc)
 target_link_libraries(socket_test3 muduo_se_net)
+
+add_executable(eventpool eventpool.cc)
+target_link_libraries(eventpool muduo_se_net)

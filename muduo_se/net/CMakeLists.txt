@@ -11,6 +11,8 @@ set(net_srcs
     Accept.cc
     TcpServer.cc
     TcpConnect.cc
+    EventLoopThreadPool.cc
+    HttpServer.cc
 )
 
 add_library(muduo_se_net ${net_srcs})

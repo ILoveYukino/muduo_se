@@ -37,6 +37,7 @@ EventLoop::EventLoop()
     
     wakechannel_->setReadCallback(std::bind(&EventLoop::handlread,this));
     wakechannel_->enread();
+    
 }
 
 EventLoop::~EventLoop(){

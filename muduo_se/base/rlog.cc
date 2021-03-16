@@ -13,6 +13,8 @@ std::condition_variable rlog::cond_;
 uint64_t rlog::one_buff_len = 30*1024*1024;//30MB
 
 void rlog::init_path(const char* _log_dir,const char* name,int level){
+    if(env_ok) return;
+
     std::unique_lock<std::mutex> lock(mutex_);
 
     memcpy(basename,name,sizeof(name));
@@ -34,6 +36,7 @@ void rlog::init_path(const char* _log_dir,const char* name,int level){
 }
 
 void rlog::init(){
+    if(env_ok) return;
     tid=std::thread(&rlog::persist,this);
     running.store(true);
 }
