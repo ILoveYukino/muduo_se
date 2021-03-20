@@ -13,7 +13,7 @@ void connect2(const TcpConnectPtr& conptr){
 /*可读事件来到回调*/
 void message(const TcpConnectPtr& conptr,Buffer* buf,timestamp t){
     cout<<"receive message: "<<buf->readindex()<<endl;
-    cout<<"--------------------------------------"<<endl;
+    //cout<<"--------------------------------------"<<endl;
 }
 
 int main(){

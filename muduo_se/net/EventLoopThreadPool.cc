@@ -42,4 +42,5 @@ EventLoop* EventLoopThreadPool::getEventLoop(){
     else{
         LOG_WARN("create EventLoop nums down 0 , ERROR");
     }
+    return nullptr;
 }

@@ -10,8 +10,9 @@ TcpConnect::TcpConnect(Socket&& fd,IpAdress& peer,IpAdress& seraddr,EventLoop* l
  index_(index),
  channel_(new Channel(loop_,fd_.fd())),
  inbuffer_(new Buffer()),
- outbuffer_(new Buffer()){
-     printf("TcpConnect::TcpConnect peer %s connect fd = %d \n",peer.fromip().c_str(),fd_.fd());
+ outbuffer_(new Buffer()),
+ state_(kconnected){
+     //printf("TcpConnect::TcpConnect peer %s connect fd = %d \n",peer.fromip().c_str(),fd_.fd());
      fd_.setkeepalive();
      channel_->setReadCallback(std::bind(&TcpConnect::handleread,this,std::placeholders::_1));
      channel_->setWriteCallback(std::bind(&TcpConnect::handlewrite,this));
@@ -22,12 +23,12 @@ TcpConnect::~TcpConnect(){
 
 void TcpConnect:: conestablish(){
     loop_->assertInLoopThread();
-    printf("test tid = %d \n",gettid());
+    //printf("test tid = %d \n",gettid());
     channel_->tie(shared_from_this());
     
     channel_->enread();
     connectcallback_(shared_from_this());
-    printf("--------------------------------------\n");
+    //printf("--------------------------------------\n");
 }
 
 /*读事件，读出消息给messagecallback处理*/
@@ -69,10 +70,28 @@ void TcpConnect::delchannel(){
     printf("TcpConnect %d del. peer: %s \n",index_,peer_.fromip().c_str());
 }
 
+void TcpConnect::shutdown(){
+    if(state_==kconnected){
+        state_ = kdisconnect;
+        loop_->runinloop(std::bind(&TcpConnect::shutdownloop,this));
+    }
+}
+
+void TcpConnect::shutdownloop(){
+    loop_->assertInLoopThread();
+    if(!channel_->iswriting()){
+        fd_.shutdown();
+    }
+}
+
 /*发送数据给套接字*/
 
-void TcpConnect::send(std::string& str){
+void TcpConnect::send(const std::string& str){
     send(str.c_str(),str.length());
+}
+
+void TcpConnect::send(Buffer& buffer){
+    send(buffer.peek(),buffer.readsize());
 }
 
 void TcpConnect::send(const char* str,int len){

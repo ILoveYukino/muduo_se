@@ -8,7 +8,8 @@ TcpServer::TcpServer(EventLoop* loop,IpAdress& serveraddr,bool multi,int num)
 :loop_acceptor(loop),
  serveraddr_(serveraddr),
  acceptorptr(new Acceptor(loop_acceptor,serveraddr_)),
- eventpool(new EventLoopThreadPool(num,loop)),
+ threadnum_(num),
+ eventpool(new EventLoopThreadPool(threadnum_,loop)),
  starting_(false),
  connid_(1),
  multi_reactor(multi){

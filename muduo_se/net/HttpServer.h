@@ -3,17 +3,32 @@
 
 #include "TcpServer.h"
 #include <functional>
+#include <string>
 
 class HttpRequest;
-class HttpReponse;
+class HttpResponse;
 
-using HttpCallback = std::function<void(HttpRequest&,HttpReponse&)>;
+typedef std::function<void(HttpRequest&,HttpResponse*)> HttpCallback;
 class HttpServer{
 public:
-    HttpServer();
+    HttpServer(EventLoop* loop,IpAdress& listenAddr,const std::string& name,bool multi = true,int threadnum=8);
+
+    EventLoop* getLoop() { return server_.getloop(); }
+
+    void setHttpCallback(const HttpCallback& cb)
+    {
+        httpcallback_ = cb;
+    }
+
+    void start();
 private:
-    EventLoop* loop_;
-    TcpServer server;
+    void onConnection(const TcpConnectPtr& conn);
+    void onMessage(const TcpConnectPtr& conn,Buffer* buf,timestamp receiveTime);
+    void onRequest(const TcpConnectPtr&,HttpRequest&);
+    
+    TcpServer server_;
+    HttpCallback httpcallback_;
+    std::string name_;
 };
 
 #endif

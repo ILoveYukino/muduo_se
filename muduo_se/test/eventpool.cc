@@ -17,7 +17,7 @@ void message(const TcpConnectPtr& conptr,Buffer* buf,timestamp t){
     //std::string s2(10000000,'a');
     conptr->send(s1);
     //conptr->send(s2);
-    cout<<"--------------------------------------"<<endl;
+    //cout<<"--------------------------------------"<<endl;
 }
 
 int main(){

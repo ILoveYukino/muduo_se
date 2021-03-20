@@ -15,6 +15,8 @@ class EventLoop;
     Socket
     就先初始化Channel再初始化Socket
     就会导致fd未赋值就在Channel中初始化导致随机值，产生错误
+
+    nullfd,防止文件描述符不够导致无法从accpet的队列中拿出，导致epoll一直被触发
 */
 
 class Acceptor{
@@ -33,6 +35,7 @@ class Acceptor{
         Socket listenfd_;
         Channel acceptchannel_;
         NewConnectionCallback func;
+        int nullfd_;
 };
 
 #endif

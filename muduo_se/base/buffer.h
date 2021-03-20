@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <cstring>
+#include <assert.h>
 
 class cell_buffer{
     public:
@@ -40,21 +41,48 @@ class cell_buffer{
 
 class Buffer{
     public:
-        Buffer(int len = 1024);
+        Buffer(int len = 65535);
         ~Buffer();
         ssize_t read(int fd);
         ssize_t write(int fd);
 
         void append(const char* buf,int len);
-        void append(std::string& buf);
+        void append(const std::string& buf);
         void append(std::vector<char>& buf);
+        void append(Buffer& that);
 
         int readsize();
         int writesize();
 
         char* readindex();
         char* writeindex();
+        char* peek() {return buffer_.data()+readindex_;}
+        char* beginWrite() {return buffer_.data()+writeindex_;}
+        char* findCRLF() {
+            char* crlf = std::search(peek(), beginWrite(), kCRLF, kCRLF+2);
+            return crlf == beginWrite() ? NULL : crlf;
+        }
 
+        void retrieveUntil(const char* end)
+        {
+            assert(peek() <= end);
+            assert(end <= beginWrite());
+            retrieve(end - peek());
+        }
+
+        void retrieve(size_t len)
+        {
+            assert(len <= readsize());
+            if (len < readsize())
+            {
+                readindex_ += len;
+            }
+            else
+            {
+                readindex_ = 0;
+                writeindex_ = 0;
+            }
+        }
         bool full();
         bool empty();
     private:
@@ -64,6 +92,8 @@ class Buffer{
         std::vector<char> buffer_;
         void swap();
         void resize(int len);
+
+        static const char kCRLF[];
 
 };
 

@@ -42,6 +42,8 @@ void cell_buffer::persist(std::ofstream& fp_){
     clear();
 }
 
+const char Buffer::kCRLF[] = "\r\n";
+
 Buffer::Buffer(int len)
 :buffer_(len),
  readindex_(0),
@@ -69,7 +71,7 @@ ssize_t Buffer::read(int fd){
     }
     else{
         writeindex_ = buffer_.size();
-        append(temp,len - writeindex_);
+        append(temp,len - writesize());
     }
     return len;
 }
@@ -86,15 +88,16 @@ void Buffer::append(const char* buf,int len){
         /*不可以直接存放，但是加上空闲空间可以存放，需调整待读数据存放位置*/
         swap();
     }
-    else{
+    else if(len > writesize() + readindex_){
         /*无法存放，必须扩容*/
         resize(len);
     }
     std::copy(buf,buf+len,buffer_.data()+writeindex_);
     writeindex_ += len;
+    //printf("netrong: %s \n",buffer_.data());
 }
 
-void Buffer::append(std::string& buf){
+void Buffer::append(const std::string& buf){
     append(buf.c_str(),buf.length());
 }
 

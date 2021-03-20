@@ -48,7 +48,7 @@ timestamp EpollPoller::poll(int timeout,ChannelList* activechannellist){
     int num_events=::epoll_wait(epollfd_,events_.data(),events_.size(),timeout);
     timestamp now;
     if(num_events>0){
-        printf("EpollPoller::poll %d Events happended \n",num_events);
+        //printf("EpollPoller::poll %d Events happended \n",num_events);
         LOG_INFO("%d Events happended",num_events);
         FillActiceChannel(num_events,activechannellist);
         if(num_events==events_.size()){
@@ -56,7 +56,7 @@ timestamp EpollPoller::poll(int timeout,ChannelList* activechannellist){
         }
     }
     else if(num_events==0){
-        LOG_WARN("nothing happended");
+        //LOG_WARN("nothing happended");
     }
     else{
         if(errno!=EINTR){

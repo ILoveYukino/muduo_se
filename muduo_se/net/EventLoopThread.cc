@@ -46,6 +46,6 @@ void EventLoopThread::threadfunc(){
         loop_=&loop;
         cond_.notify_all();
     }
-    printf("now eventloop tid = %d \n",gettid());
+    //printf("now eventloop tid = %d \n",gettid());
     loop.loop();
 }

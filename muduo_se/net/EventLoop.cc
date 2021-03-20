@@ -26,7 +26,7 @@ EventLoop::EventLoop()
  pendfunclists_(),
  mutex_(),
  tid(gettid()){
-     LOG_INIT("rrlog","myname",3);
+     //LOG_INIT("rrlog","myname",3);
      LOG_INFO("EventLoop creater %d in thread %d",this,tid);
      if(t_loopthisthread){
          LOG_ERROR("Another EventLoop %d exists in this thread %d",this,tid);

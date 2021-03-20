@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <string>
+#include <any>
 
 class EventLoop;
 /*
@@ -28,6 +29,11 @@ using WriteCallback = std::function<void()>;
 
 class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
     public:
+
+        enum CONNECT{
+            kconnected = 1,
+            kdisconnect
+        };
         
         TcpConnect(Socket&& fd,IpAdress& peer,IpAdress& seraddr,EventLoop* loop,int index);
         ~TcpConnect();
@@ -40,13 +46,21 @@ class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
         void handledel();
         
         void delchannel();
+        void shutdown();
+        void shutdownloop();
         void send(const char* str,int len);
-        void send(std::string& str);
+        void send(const std::string& str);
+        void send(Buffer& buffer);
         void sendinloop(const char* str,int len);
         IpAdress& getpeer(){return peer_;}
         int getindex() {return index_;}
         int fd() {return fd_.fd();}
         EventLoop* getloop() {return loop_;}
+        int connected() {return state_==kconnected;}
+        void setContext(const std::any& context) { context_ = context; }
+        const std::any& getContext() { return context_; }
+        std::any* getMutableContext() { return &context_; }
+
     private:
         EventLoop* loop_;
         IpAdress peer_;
@@ -59,6 +73,8 @@ class TcpConnect : public std::enable_shared_from_this<TcpConnect>{
         ConnectCallback connectcallback_;
         MessageCallback messagecallback_;
         CloseCallback  closecallback_;
+        int state_;
+        std::any context_;
 };
 
 

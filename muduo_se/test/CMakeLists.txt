@@ -36,3 +36,6 @@ target_link_libraries(socket_test3 muduo_se_net)
 
 add_executable(eventpool eventpool.cc)
 target_link_libraries(eventpool muduo_se_net)
+
+add_executable(HttpServer_test HttpServer_test.cc)
+target_link_libraries(HttpServer_test muduo_se_net)

@@ -84,8 +84,6 @@ class rlog{
         static uint64_t one_buff_len;
         std::thread tid;
         std::atomic_bool running;
-
-        bool ok;
 };
 
 template<class... Args>

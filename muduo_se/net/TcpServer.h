@@ -23,6 +23,8 @@ class TcpServer{
         void setmessagecallback(const MessageCallback& func) {messagecallback_ = func;}
         void setclosecallback(const CloseCallback& func) {closecallback_ = func;}
         bool starting() {return starting_;}
+        EventLoop* getloop() {return loop_acceptor;}
+        int getthreadnum() {return threadnum_;}
     private:
         void newconn(Socket&& fd,IpAdress& peer);
         void removeconnect(const TcpConnectPtr& con);
@@ -30,6 +32,7 @@ class TcpServer{
         EventLoop* loop_acceptor;
         IpAdress serveraddr_;
         std::unique_ptr<Acceptor> acceptorptr;
+        int threadnum_;
         std::shared_ptr<EventLoopThreadPool> eventpool;
         std::unordered_map<int,TcpConnectPtr> tcpconlists;
         ConnectCallback connectcallback_;

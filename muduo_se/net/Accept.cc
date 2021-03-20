@@ -1,10 +1,12 @@
 #include "EventLoop.h"
 #include "Accept.h"
+#include <fcntl.h>
 
 Acceptor::Acceptor(EventLoop* loop,IpAdress& ip)
 :loop_(loop),
  listenfd_(),
- acceptchannel_(loop,listenfd_.fd()){
+ acceptchannel_(loop,listenfd_.fd()),
+ nullfd_(::open("/dev/null",O_RDONLY | O_CLOEXEC)){
      
      listenfd_.setreuseaddr();
      listenfd_.bind(ip);
@@ -27,6 +29,14 @@ void Acceptor::handleRead(){
             func(std::move(con),client_ip);
         }
     }
+    else{
+        if(errno==EMFILE){
+            close(nullfd_);
+            nullfd_ = accept(listenfd_.fd(),NULL,NULL);
+            close(nullfd_);
+            nullfd_ = open("/dev/null",O_RDONLY | O_CLOEXEC);
+        }
+    }
 }
 
 void Acceptor::setCallback(const NewConnectionCallback& f){
@@ -34,5 +44,7 @@ void Acceptor::setCallback(const NewConnectionCallback& f){
 }
 
 Acceptor::~Acceptor(){
-   
+   acceptchannel_.disallevent();
+   acceptchannel_.remove();
+   close(nullfd_);
 }
